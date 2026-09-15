@@ -57,7 +57,7 @@ Centralizar la gestión de citas y atenciones médicas en una sola plataforma in
 ---
 
 ## 📂 Estructura del proyecto
-
+```
 clinica-salud-integral-backend/
 ├── src/
 │   ├── main/
@@ -81,7 +81,7 @@ clinica-salud-integral-backend/
 ├── mvnw
 ├── mvnw.cmd
 └── README.md
-
+```
 ---
 
 ## 📋 Módulos por Sprint
