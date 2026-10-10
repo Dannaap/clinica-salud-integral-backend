@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://db.xxxxxxxxxxxxx.supabase.co:5432/postgres
+    url: jdbc:postgresql://db.zrfuhuugfzgxzakjfbnu.supabase.co:5432/postgres?sslmode=require
     username: postgres
-    password: TU_PASSWORD_DE_SUPABASE
+    password: H.M2Q^Vg7.gSCPT
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,5 +15,5 @@ server:
   port: 8080
 
 jwt:
-  secret: clave-secreta-super-segura-2026
+  secret: "clave-secreta-super-segura-2026!"
   expiration: 86400000
