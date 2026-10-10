@@ -68,9 +68,13 @@ clinica-salud-integral-backend/
 │   │   │   ├── auth/          → Login y autenticación
 │   │   │   ├── usuarios/      → Gestión de usuarios
 │   │   │   ├── pacientes/     → Gestión de pacientes
-│   │   │   ├── citas/         → (Sprint 2)
-│   │   │   ├── atenciones/    → (Sprint 3)
-│   │   │   ├── reportes/      → (Sprint 4)
+│   │   │   ├── especialidades/→ Catálogo de especialidades
+│   │   │   ├── medicos/       → Perfiles de médicos
+│   │   │   ├── turnos/        → Horarios y disponibilidad
+│   │   │   ├── citas/         → Reserva, reprogramación y cancelación
+│   │   │   ├── atenciones/    → Historia clínica y recetas
+│   │   │   ├── notificaciones/→ Confirmaciones y recordatorios internos
+│   │   │   ├── reportes/      → Reportes PDF y Excel
 │   │   │   └── common/        → Excepciones, utilidades
 │   │   └── resources/
 │   │       ├── application.yml
@@ -92,6 +96,8 @@ clinica-salud-integral-backend/
 | Sprint 2 | citas, turnos, medicos, especialidades |
 | Sprint 3 | atenciones, historias, recetas |
 | Sprint 4 | notificaciones, reportes |
+
+Los módulos de las cuatro iteraciones están implementados en este backend. El alcance funcional sigue los requerimientos RF-01 a RF-09 del proyecto; las pruebas se ejecutan con una base H2 aislada y no modifican Supabase.
 
 ---
 
@@ -146,6 +152,12 @@ jwt:
 
 Nunca subas las credenciales reales al repositorio. Usa variables de entorno en producción.
 
+### Datos ficticios para demostración
+
+El script `database/schema-and-demo-data.sql` agrega especialidades, médicos, pacientes y citas ficticias para probar los módulos. En Supabase, abre **SQL Editor**, pega el contenido y ejecuta la consulta. Al volver a ejecutarlo, elimina y repone únicamente las filas de demostración identificadas por sus DNIs y emails `*.demo@clinica.test`; conserva el administrador `admin@clinica.test` y otros registros.
+
+Las contraseñas nuevas deben tener un mínimo de 8 caracteres y se almacenan con BCrypt.
+
 ---
 
 ## 🚀 Cómo levantar el backend localmente
@@ -162,26 +174,80 @@ Nunca subas las credenciales reales al repositorio. Usa variables de entorno en 
 
 El servidor corre en http://localhost:8080.
 
+### Crear el primer administrador de prueba
+
+La tabla `usuarios` no incluye una cuenta inicial. Para crear una cuenta ficticia una sola vez, inicia el backend con estas variables en PowerShell:
+
+```powershell
+$env:APP_BOOTSTRAP_ADMIN_ENABLED = "true"
+$env:APP_BOOTSTRAP_ADMIN_DNI = "00000000"
+$env:APP_BOOTSTRAP_ADMIN_NOMBRES = "Admin"
+$env:APP_BOOTSTRAP_ADMIN_APELLIDOS = "Prueba"
+$env:APP_BOOTSTRAP_ADMIN_EMAIL = "admin@clinica.test"
+$env:APP_BOOTSTRAP_ADMIN_PASSWORD = Read-Host "Contraseña temporal (mínimo 8 caracteres)"
+& .\mvnw.cmd spring-boot:run
+```
+
+El inicializador solo crea el administrador si `usuarios` está vacía y cifra su contraseña con BCrypt. Usa datos ficticios. Después de confirmar el inicio de sesión, detén el proceso con `Ctrl+C`, desactiva `APP_BOOTSTRAP_ADMIN_ENABLED` y elimina la variable de contraseña antes de iniciar el backend normalmente:
+
+Las contraseñas nuevas deben tener al menos 8 caracteres; el backend las almacena usando BCrypt.
+
+```powershell
+$env:APP_BOOTSTRAP_ADMIN_ENABLED = "false"
+Remove-Item Env:APP_BOOTSTRAP_ADMIN_PASSWORD -ErrorAction SilentlyContinue
+& .\mvnw.cmd spring-boot:run
+```
+
 ---
 
-## 🔐 Endpoints principales
+## 🔐 Endpoints implementados
 
 | Método | Endpoint | Descripción |
 |---|---|---|
-| POST | /api/auth/login | Login con JWT |
-| GET | /api/pacientes | Listar pacientes |
-| GET | /api/pacientes/{dni} | Buscar por DNI |
-| POST | /api/pacientes | Crear paciente |
-| PUT | /api/pacientes/{id} | Actualizar paciente |
-| DELETE | /api/pacientes/{id} | Eliminar paciente |
-| GET | /api/usuarios | Listar usuarios (Admin) |
-| POST | /api/usuarios | Crear usuario (Admin) |
+| POST | `/api/auth/login` | Iniciar sesión y obtener JWT |
+| GET, POST | `/api/usuarios` | Listar y crear usuarios (ADMIN) |
+| GET, PUT, DELETE | `/api/usuarios/{id}` | Consultar, editar y eliminar usuario (ADMIN) |
+| GET, POST | `/api/pacientes` | Listar y registrar pacientes (ADMIN, RECEPCION) |
+| GET | `/api/pacientes/dni/{dni}` | Buscar paciente por DNI |
+| PUT, DELETE | `/api/pacientes/{id}` | Editar y eliminar paciente |
+| GET, POST, PUT, DELETE | `/api/especialidades` | Administrar especialidades (escritura ADMIN) |
+| GET, POST, PUT, DELETE | `/api/medicos` | Administrar perfiles médicos (escritura ADMIN) |
+| GET | `/api/turnos?medicoId={id}&desde={fecha-hora}&hasta={fecha-hora}` | Consultar agenda y disponibilidad; MEDICO solo consulta su agenda |
+| POST, PUT, DELETE | `/api/turnos` y `/api/turnos/{id}` | Crear, editar y eliminar turnos (ADMIN) |
+| GET, POST | `/api/citas` | Consultar agenda y reservar una cita |
+| PUT | `/api/citas/{id}/reprogramar` | Reprogramar una cita reservada |
+| DELETE | `/api/citas/{id}` | Cancelar una cita reservada |
+| POST | `/api/atenciones` | Registrar atención con diagnóstico y código CIE-10 (médico asignado/ADMIN) |
+| GET | `/api/atenciones/paciente/{pacienteId}` | Consultar historia clínica (MEDICO, ADMIN) |
+| GET, POST | `/api/atenciones/{atencionId}/recetas` | Consultar y emitir recetas digitales |
+| GET | `/api/notificaciones` | Consultar confirmaciones y recordatorios internos (ADMIN, RECEPCION) |
+| GET | `/api/reportes/diario/{yyyy-MM-dd}/pdf` | Descargar reporte diario PDF |
+| GET | `/api/reportes/diario/{yyyy-MM-dd}/excel` | Descargar reporte diario Excel `.xlsx` |
+| GET, PUT | `/api/cuenta` | Consultar y actualizar el perfil propio |
+| PUT | `/api/cuenta/contrasena` | Cambiar contraseña verificando la actual |
+
+Las reservas, reprogramaciones y cancelaciones generan notificaciones asociadas a la cita; se crea automáticamente un recordatorio para citas del día siguiente. Las citas reservadas cuyo turno termina sin atención se marcan como `AUSENTE` para el índice de ausentismo. Por defecto, las notificaciones quedan registradas en la intranet. Para habilitar envío real por correo, configura SMTP mediante variables de entorno y activa la opción:
+
+```powershell
+$env:APP_NOTIFICATIONS_EMAIL_ENABLED = "true"
+$env:SPRING_MAIL_HOST = "smtp.example.test"
+$env:SPRING_MAIL_PORT = "587"
+$env:SPRING_MAIL_USERNAME = "usuario-smtp"
+$env:SPRING_MAIL_PASSWORD = "secreto-smtp"
+$env:SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH = "true"
+$env:SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE = "true"
+$env:APP_NOTIFICATIONS_EMAIL_FROM = "no-reply@example.test"
+```
+
+No guardes credenciales SMTP en el repositorio. Sin SMTP habilitado, el sistema mantiene la notificación interna y registra el estado de entrega.
+
+El reporte diario incluye citas atendidas, ausentes, canceladas, porcentaje de ausentismo (`ausentes / (atendidas + ausentes)`) y el detalle de atención, diagnóstico CIE-10 y recetas.
 
 ---
 
 ## 🧪 Ejecutar tests
 
-./mvnw test
+`./mvnw test` (Windows PowerShell desde la carpeta raíz: `mvnw.cmd test`)
 
 ---
 

@@ -1,0 +1,8 @@
+package pe.saludintegral.clinica.usuarios;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record CambiarContrasenaRequest(@NotBlank String contrasenaActual,
+                                       @NotBlank @Size(min = 8) String contrasenaNueva) {
+}
