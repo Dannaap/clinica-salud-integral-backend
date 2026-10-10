@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require
+    username: postgres.xnjhxuodpitvkzmnxcdx
+    password: 75109498Fa.
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
+
+jwt:
+  secret: "clave-secreta-super-segura-2026!"
+  expiration: 86400000
+
+app:
+  bootstrap-admin:
+    enabled: true
+    dni: "00000000"
+    nombres: "Admin"
+    apellidos: "Clinica"
+    email: "admin@clinica.com"
+    password: "AdminPassword123!"
