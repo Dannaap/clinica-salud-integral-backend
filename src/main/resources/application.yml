@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://db.zrfuhuugfzgxzakjfbnu.supabase.co:5432/postgres?sslmode=require
-    username: postgres
-    password: H.M2Q^Vg7.gSCPT
+    url: jdbc:postgresql://aws-0-us-east-1.pooler.supabase.com:5432/postgres?sslmode=require
+    username: postgres.xnjhxuodpitvkzmnxcdx
+    password: 75109498Fa.
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,3 +17,12 @@ server:
 jwt:
   secret: "clave-secreta-super-segura-2026!"
   expiration: 86400000
+
+app:
+  bootstrap-admin:
+    enabled: true
+    dni: "00000000"
+    nombres: "Admin"
+    apellidos: "Clinica"
+    email: "admin@clinica.com"
+    password: "AdminPassword123!"
