@@ -1,4 +1,4 @@
-# 🔧 Backend — Clínica Salud Integral S.A.C.
+# Backend — Clínica Salud Integral S.A.C.
 
 API REST construida con **Spring Boot 3 + Java 17** para la intranet de la **Clínica Salud Integral S.A.C.**
 
@@ -6,7 +6,7 @@ Sistema interno para la gestión de citas y atenciones médicas que centraliza l
 
 ---
 
-## 🏥 ¿Qué es esta intranet?
+## ¿Qué es esta intranet?
 
 Este proyecto es una **intranet con arquitectura cliente-servidor**, compuesta por dos repositorios:
 
@@ -27,13 +27,13 @@ Este proyecto es una **intranet con arquitectura cliente-servidor**, compuesta p
 
 ---
 
-## 🎯 Objetivo
+## Objetivo
 
 Centralizar la gestión de citas y atenciones médicas en una sola plataforma interna para eliminar los siguientes problemas operativos:
 
-- ⏱️ Elevados tiempos de espera en recepción al programar o confirmar citas.
-- 🔔 Alta tasa de inasistencias por falta de recordatorios automáticos.
-- 🗂️ Errores y duplicidad en historias clínicas por manipulación de documentos físicos.
+- Elevados tiempos de espera en recepción al programar o confirmar citas.
+- Alta tasa de inasistencias por falta de recordatorios automáticos.
+- Errores y duplicidad en historias clínicas por manipulación de documentos físicos.
 
 ### Problema general
 
@@ -41,7 +41,7 @@ Centralizar la gestión de citas y atenciones médicas en una sola plataforma in
 
 ---
 
-## 🛠️ Stack tecnológico
+## Stack tecnológico
 
 | Capa | Tecnología |
 |---|---|
@@ -56,7 +56,7 @@ Centralizar la gestión de citas y atenciones médicas en una sola plataforma in
 
 ---
 
-## 📂 Estructura del proyecto
+## Estructura del proyecto
 
 ```text
 clinica-salud-integral-backend/
